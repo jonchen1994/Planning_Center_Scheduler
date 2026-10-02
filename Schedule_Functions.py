@@ -44,13 +44,13 @@ class PCScheduler():
     def create_dictionaries(self):
         #create all lookup dictionaries from the Sunday slots list
         self.penalty_lookup = {w['slot_id'] : w['missing_penalty'] for w in self.position_slots} 
-        self.stress_lookup = {w['slot_id'] : w['position_stress'] for w in self.position_slots}
+        self.stress_lookup = {w["slot_id"]: round(w["position_stress"] * w.get("hardship_factor", 1)) for w in self.position_slots}
         self.slot_to_day = {w['slot_id'] : w['date'] for w in self.position_slots} 
         self.id_to_name_lookup = {v['Person_ID']: v['Full_Name'] for v in self.VOLUNTEER_BLOCKOUTS}
 
         self.volunteer_list = [v['Person_ID'] for v in self.VOLUNTEER_BLOCKOUTS]
 
-    def create_variables_space(self):
+    def create_variables_space(self, priority_penalty = 20):
         x = {}
         penalties = []
 
@@ -71,7 +71,7 @@ class PCScheduler():
                 penalties.append(x[(slot_id, volunteer)]*self.stress_lookup[slot_id])
         
                 priority = self.PRIORITY.get((volunteer, position_name), 1)
-                penalties.append(x[(slot_id, volunteer)]  * (priority - 1) * 20)
+                penalties.append(x[(slot_id, volunteer)]  * (priority - 1) * priority_penalty)
 
         self.x = x
         self.penalties = penalties
@@ -106,7 +106,7 @@ class PCScheduler():
 
         self.worked = worked
 
-    def add_preferences_constraints(self):
+    def add_preferences_constraints(self, preference_violation_penalty = 100):
         # To implement preferences - I need to loop through the preferences and then each sunday
 
         worked_people = {
@@ -154,7 +154,7 @@ class PCScheduler():
                     self.model.Add(pref_violation <= target_person_worked)
 
         
-                self.penalties.append(pref_violation*100)
+                self.penalties.append(pref_violation*preference_violation_penalty)
 
     def calc_empty_penalties(self):
         ## create penalities list for empty positions
@@ -253,9 +253,9 @@ class PCScheduler():
 
         schedule_df = pd.DataFrame(schedule_rows).sort_values(["date", "position_id"])
 
-        schedule_df.pivot_table(
+        return schedule_df.pivot_table(
             index="position_id",
             columns="date",
             values="volunteer_name",
             aggfunc="first"
-        ).to_csv('output.csv')
+        )

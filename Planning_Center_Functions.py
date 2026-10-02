@@ -58,7 +58,7 @@ def _filter_blockouts(person_blockout_list, period_start, period_end):
 auth: HTTPBasicAuth
 active_teams_list: dataframe
 """
-def _get_current_active_teams(auth, active_teams_list, ):
+def _get_current_active_teams(auth, active_teams_list,):
     # read in the active_teams_list and clean it
     active_teams_list = active_teams_list.fillna('')
     active_teams_list['Full_Team'] = np.where(
@@ -73,6 +73,7 @@ def _get_current_active_teams(auth, active_teams_list, ):
 
 # get all the people data from Planning Center
 def _get_person_id_from_PC(auth):
+    print('Getting volunteer data from Planning Center')
     people_data = _get_all_from_url_nexts('https://api.planningcenteronline.com/people/v2/people', auth) 
     people_data = pd.json_normalize(people_data)
     people_data = people_data[['id','attributes.first_name','attributes.last_name']]
@@ -83,6 +84,7 @@ def _get_person_id_from_PC(auth):
 def _get_person_preferences(auth, full_active_team_df):
     volunteer_preferences = []
     unique_vols = full_active_team_df[['Person_ID', 'Full_Name']].drop_duplicates()
+    print('Getting scheduling preferences from Planning Center')
     for i, r in tqdm(unique_vols.iterrows(), total = len(unique_vols)): 
         vol_id = r['Person_ID']
         full_name = r['Full_Name']
@@ -117,6 +119,7 @@ def _get_volunteer_blockouts(full_active_team_df, PERIOD_START, PERIOD_END, auth
     # First get all blockouts from planning center
     unique_vols = full_active_team_df[['Person_ID', 'Full_Name']].drop_duplicates()
     volunteer_blockouts = []
+    print('Getting Blockout dates from Planning Center')
     for i, r in tqdm(unique_vols.iterrows(), total = len(unique_vols)):
         vol_id = r['Person_ID']
         full_name = r['Full_Name']
