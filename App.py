@@ -5,12 +5,27 @@ from pathlib import Path
 from tkinter import filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
 
+import os
+import sys
+
+
+if sys.stdout is None:
+    sys.stdout = open(os.devnull, "w")
+
+if sys.stderr is None:
+    sys.stderr = open(os.devnull, "w")
+
 from Create_Schedule import fetch_data
 from Create_Schedule import main as create_schedule
 
 
-config_path = Path.cwd() / "config.json"
 
+if getattr(sys, "frozen", False):
+    app_folder = Path(sys.executable).parent
+else:
+    app_folder = Path(__file__).resolve().parent
+
+config_path = app_folder / "config.json"
 with config_path.open("r", encoding="utf-8") as file:
     config = json.load(file)
 
