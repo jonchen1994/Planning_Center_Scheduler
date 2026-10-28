@@ -46,6 +46,7 @@ fields = [
     ("Repeated Use Penalty", "REPEATED_USE_PENALTY"),
     ("Rest Period", "rest_period"),
     ("Team-Specific Penalty (1=yes, 0=no)", "team_specific_penalty"),
+    ("Youth Week Offset (0 or 1)", "youth_week_offset"),
 ]
 
 fetch_setting_keys = {
@@ -218,6 +219,7 @@ def collect_config():
         "REPEATED_USE_PENALTY",
         "rest_period",
         "team_specific_penalty",
+        "youth_week_offset",
     ]
 
     for key in integer_settings:

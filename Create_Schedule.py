@@ -59,7 +59,7 @@ def main(config, planning_center_data):
 								PREFERENCES)
 
 	# Create all the data structures
-	schedule_problem.create_all_position_slots_per_week()
+	schedule_problem.create_all_position_slots_per_week(youth_week_offset=config.get("youth_week_offset", 0))
 	schedule_problem.create_dictionaries()
 	schedule_problem.create_variables_space(priority_penalty=config["priority_penalty"])
 	

@@ -21,7 +21,7 @@ class PCScheduler():
         self.sundays_list = pd.date_range(start=self.PERIOD_START, end=self.PERIOD_END, freq='W-SUN').date.tolist() 
 
 
-    def create_all_position_slots_per_week(self):
+    def create_all_position_slots_per_week(self, youth_week_offset=0,):
         # Creates the entire matrix/board of slots that need volunteers and every sunday
         position_slots = []
         for index, sunday in enumerate(self.sundays_list):
@@ -32,7 +32,7 @@ class PCScheduler():
                 position_id = slot.get('position_id')
                 position_name = slot.get('position')
                 #Youth Leadeers meet every other
-                if index % 2 == 0 and position_name == 'Youth Leaders':
+                if (index + youth_week_offset) % 2 == 0 and position_name == 'Youth Leaders':
                     continue 
                 slot_id = f'{str(sunday)}_{position_id}'
                 new_slot['slot_id'] = slot_id
